@@ -1,40 +1,40 @@
-import type { ReactNode } from 'react';
-import { loadSubscriptionIds, loadToken } from '../../../environments/environment';
 import { SettingsBox } from '../../components/settings_box';
-import { useHostingPlan, useIsLocal, useQueryCachePersist, useResourcePath } from '../../state/workflowLoadingSelectors';
-import LogicAppsDesignerStandard from '../AzureLogicAppsDesigner/laDesigner';
-import LogicAppsDesignerConsumption from '../AzureLogicAppsDesigner/laDesignerConsumption';
+import { useQueryCachePersist } from '../../state/workflowLoadingSelectors';
 import { LocalDesigner } from '../LocalDesigner/localDesigner';
 import { ReactQueryProvider } from '@microsoft/logic-apps-designer';
-import { useQuery } from '@tanstack/react-query';
 
-const LoadWhenArmTokenIsLoaded = ({ children }: { children: ReactNode }) => {
-  const { isLoading } = useQuery(['armToken'], loadToken);
-  useQuery(['subcriptionIds'], loadSubscriptionIds);
-  return isLoading ? null : <>{children}</>;
-};
 export const DesignerWrapper = () => {
-  const resourcePath = useResourcePath();
-  const isLocal = useIsLocal();
-  const hostingPlan = useHostingPlan();
   const queryCachePersist = useQueryCachePersist();
 
   return (
     <ReactQueryProvider persistEnabled={queryCachePersist}>
-      <LoadWhenArmTokenIsLoaded>
-        <div style={{ height: '100vh' }}>
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex',
+        overflow: 'hidden'
+      }}>
+        {/* Left sidebar for settings */}
+        <div style={{ 
+          width: '400px', 
+          minWidth: '400px',
+          height: '100vh',
+          overflow: 'auto',
+          borderRight: '1px solid #e1e1e1',
+          backgroundColor: '#fafafa'
+        }}>
           <SettingsBox />
-          {isLocal ? (
-            <LocalDesigner />
-          ) : resourcePath ? (
-            hostingPlan === 'consumption' ? (
-              <LogicAppsDesignerConsumption />
-            ) : (
-              <LogicAppsDesignerStandard />
-            )
-          ) : null}
         </div>
-      </LoadWhenArmTokenIsLoaded>
+        
+        {/* Main content area for designer */}
+        <div style={{ 
+          flex: 1, 
+          height: '100vh',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          <LocalDesigner />
+        </div>
+      </div>
     </ReactQueryProvider>
   );
 };

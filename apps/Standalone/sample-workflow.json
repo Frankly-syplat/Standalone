@@ -1,0 +1,87 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "actions": {
+      "Initialize_variable": {
+        "runAfter": {},
+        "type": "InitializeVariable",
+        "inputs": {
+          "variables": [
+            {
+              "name": "myVariable",
+              "type": "string",
+              "value": "Hello World"
+            }
+          ]
+        }
+      },
+      "Condition": {
+        "actions": {
+          "HTTP": {
+            "runAfter": {},
+            "type": "Http",
+            "inputs": {
+              "method": "GET",
+              "uri": "https://httpbin.org/get"
+            }
+          }
+        },
+        "runAfter": {
+          "Initialize_variable": [
+            "Succeeded"
+          ]
+        },
+        "else": {
+          "actions": {
+            "Compose": {
+              "runAfter": {},
+              "type": "Compose",
+              "inputs": "Alternative path"
+            }
+          }
+        },
+        "expression": {
+          "and": [
+            {
+              "equals": [
+                "@variables('myVariable')",
+                "Hello World"
+              ]
+            }
+          ]
+        },
+        "type": "If"
+      },
+      "Response": {
+        "runAfter": {
+          "Condition": [
+            "Succeeded"
+          ]
+        },
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "message": "Workflow completed successfully",
+            "variable": "@variables('myVariable')"
+          }
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {},
+  "kind": "Stateful"
+}

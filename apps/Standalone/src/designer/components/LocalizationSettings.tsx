@@ -18,16 +18,8 @@ export const LocalizationSettings = () => {
           text: 'English',
         },
         {
-          key: 'zh-hant',
-          text: 'Chinese',
-        },
-        {
-          key: 'ja',
-          text: 'Japanese',
-        },
-        {
-          key: 'ko',
-          text: 'Korean',
+          key: 'es',
+          text: 'Spanish',
         },
         {
           key: 'de',
@@ -38,12 +30,16 @@ export const LocalizationSettings = () => {
           text: 'French',
         },
         {
-          key: 'id',
-          text: 'Indonesian',
+          key: 'pt-BR',
+          text: 'Portuguese',
         },
         {
-          key: 'en-XA',
-          text: 'Test Language (en-XA)',
+          key: 'ar',
+          text: 'Arabic',
+        },
+        {
+          key: 'zh-Hans',
+          text: 'Chinese',
         },
       ]}
       selectedKey={language}

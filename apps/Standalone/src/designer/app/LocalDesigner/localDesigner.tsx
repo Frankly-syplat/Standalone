@@ -3,6 +3,7 @@ import { CustomConnectionParameterEditorService } from './customConnection/custo
 import { CustomEditorService } from './customEditorService';
 import { HttpClient } from './httpClient';
 import { PseudoCommandBar } from './pseudoCommandBar';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import {
   StandardConnectionService,
   StandardOperationManifestService,
@@ -252,7 +253,9 @@ export const LocalDesigner = () => {
           runInstance={runInstance}
           isMultiVariableEnabled={hostOptions.enableMultiVariable}
         >
-          <PseudoCommandBar />
+          <ErrorBoundary>
+            <PseudoCommandBar />
+          </ErrorBoundary>
           <Designer />
           <CombineInitializeVariableDialog />
           <TriggerDescriptionDialog workflowId={'local'} />

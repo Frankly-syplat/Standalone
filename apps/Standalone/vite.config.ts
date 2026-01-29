@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react';
 import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
 import nodePolyfills from 'rollup-plugin-polyfill-node';
 import { nodePolyfills as np } from 'vite-plugin-node-polyfills';
-import mkcert from 'vite-plugin-mkcert';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -22,10 +21,11 @@ export default defineConfig({
       buffer: true,
     }),
     np(),
-    mkcert(),
+    // Removed mkcert() to avoid certificate prompts - using HTTP only
   ],
   server: {
     port: 4200,
+    https: false, // Force HTTP only
     proxy: {
       '/templatesLocalProxy': {
         target: 'https://priti-cxf4h5cpcteue4az.b02.azurefd.net',

@@ -42,6 +42,7 @@ export interface WorkflowLoadingState {
   showPerformanceDebug?: boolean;
   runFiles: any[];
   queryCachePersist?: boolean;
+  isJsonViewerMode?: boolean; // New flag for JSON viewer mode
 }
 
 const initialState: WorkflowLoadingState = {
@@ -72,6 +73,7 @@ const initialState: WorkflowLoadingState = {
   showPerformanceDebug: false,
   runFiles: [],
   queryCachePersist: false,
+  isJsonViewerMode: false,
 };
 
 type WorkflowPayload = {
@@ -121,6 +123,37 @@ export const loadRun = createAsyncThunk('runLoadingState/loadRun', async (payloa
     return thunkAPI.rejectWithValue(null);
   }
 });
+
+// New async thunk for loading workflow from JSON string
+export const loadWorkflowFromJson = createAsyncThunk(
+  'workflowLoadingState/loadWorkflowFromJson',
+  async (jsonString: string, thunkAPI) => {
+    try {
+      const workflowData = JSON.parse(jsonString);
+      
+      // Validate that it's a Logic Apps workflow
+      if (!workflowData.definition) {
+        throw new Error('Invalid workflow: missing "definition" property');
+      }
+      
+      const definition = workflowData.definition;
+      if (!definition.$schema || !definition.$schema.includes('workflowdefinition.json')) {
+        throw new Error('Invalid workflow: not a Logic Apps workflow definition');
+      }
+
+      return {
+        workflowDefinition: definition as LogicAppsV2.WorkflowDefinition,
+        connectionReferences: workflowData.connections || {},
+        parameters: workflowData.parameters || workflowData.definition?.parameters || {},
+        workflowKind: workflowData.kind || 'stateful',
+        runFiles: [],
+      } as WorkflowPayload;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Invalid JSON format';
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
 
 export const workflowLoadingSlice = createSlice({
   name: 'workflowLoader',
@@ -235,6 +268,13 @@ export const workflowLoadingSlice = createSlice({
     setEnableMultiVariable: (state, action: PayloadAction<boolean>) => {
       state.hostOptions.enableMultiVariable = action.payload;
     },
+    setJsonViewerMode: (state, action: PayloadAction<boolean>) => {
+      state.isJsonViewerMode = action.payload;
+      if (action.payload) {
+        state.isReadOnly = true; // Force read-only in JSON viewer mode
+        state.isLocal = true; // Force local mode
+      }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(loadWorkflow.fulfilled, (state, action: PayloadAction<WorkflowPayload | null>) => {
@@ -259,6 +299,22 @@ export const workflowLoadingSlice = createSlice({
     });
     builder.addCase(loadRun.rejected, (state) => {
       state.runInstance = null;
+    });
+    builder.addCase(loadWorkflowFromJson.fulfilled, (state, action: PayloadAction<WorkflowPayload | null>) => {
+      if (!action.payload) {
+        return;
+      }
+      state.workflowDefinition = action.payload?.workflowDefinition;
+      state.connections = action.payload?.connectionReferences ?? {};
+      state.parameters = action.payload?.parameters ?? {};
+      state.runFiles = action.payload?.runFiles ?? [];
+      state.workflowKind = action.payload?.workflowKind ?? 'stateful';
+      state.isJsonViewerMode = true;
+      state.isReadOnly = true;
+      state.resourcePath = 'uploaded-workflow.json';
+    });
+    builder.addCase(loadWorkflowFromJson.rejected, (state) => {
+      // Don't clear existing workflow on JSON load failure
     });
   },
 });
@@ -288,6 +344,7 @@ export const {
   setStringOverrides,
   setQueryCachePersist,
   setEnableMultiVariable,
+  setJsonViewerMode,
 } = workflowLoadingSlice.actions;
 
 export default workflowLoadingSlice.reducer;

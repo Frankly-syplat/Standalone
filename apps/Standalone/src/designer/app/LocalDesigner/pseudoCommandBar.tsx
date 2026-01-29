@@ -1,4 +1,4 @@
-import { useShowConnectionsPanel } from '../../state/workflowLoadingSelectors';
+import { useShowConnectionsPanel, useIsReadOnly } from '../../state/workflowLoadingSelectors';
 import './pseudoCommandBar.less';
 import type { IModalStyles } from '@fluentui/react';
 import { ActionButton, Modal } from '@fluentui/react';
@@ -42,28 +42,33 @@ export const PseudoCommandBar = () => {
   const haveErrors = useMemo(() => numErrors > 0, [numErrors]);
 
   const isDirty = useIsDesignerDirty();
+  const isReadOnly = useIsReadOnly();
 
   const showConnectionsButton = useShowConnectionsPanel();
 
   return (
     <div className="pseudo-command-bar">
-      <ActionButton
-        iconProps={{ iconName: 'Save' }}
-        text="Save"
-        disabled={!isDirty}
-        onClick={() => {
-          alert("Congrats you saved the workflow! (Not really, you're in standalone)");
-          dispatch(resetDesignerDirtyState(undefined));
-        }}
-      />
-      <ActionButton
-        iconProps={{ iconName: 'Clear' }}
-        text="Discard"
-        disabled={!isDirty}
-        onClick={() => {
-          dispatch(resetDesignerDirtyState(undefined));
-        }}
-      />
+      {!isReadOnly && (
+        <>
+          <ActionButton
+            iconProps={{ iconName: 'Save' }}
+            text="Save"
+            disabled={!isDirty}
+            onClick={() => {
+              alert("Congrats you saved the workflow! (Not really, you're in standalone)");
+              dispatch(resetDesignerDirtyState(undefined));
+            }}
+          />
+          <ActionButton
+            iconProps={{ iconName: 'Clear' }}
+            text="Discard"
+            disabled={!isDirty}
+            onClick={() => {
+              dispatch(resetDesignerDirtyState(undefined));
+            }}
+          />
+        </>
+      )}
       <ActionButton
         iconProps={{ iconName: 'Parameter' }}
         text="Workflow Parameters"
@@ -86,8 +91,12 @@ export const PseudoCommandBar = () => {
         onClick={() => dispatch(openPanel({ panelMode: 'Error' }))}
         disabled={!haveErrors}
       />
-      <ActionButton iconProps={{ iconName: 'Undo' }} text="Undo" onClick={() => dispatch(onUndoClick())} disabled={!useCanUndo()} />
-      <ActionButton iconProps={{ iconName: 'Redo' }} text="Redo" onClick={() => dispatch(onRedoClick())} disabled={!useCanRedo()} />
+      {!isReadOnly && (
+        <>
+          <ActionButton iconProps={{ iconName: 'Undo' }} text="Undo" onClick={() => dispatch(onUndoClick())} disabled={!useCanUndo()} />
+          <ActionButton iconProps={{ iconName: 'Redo' }} text="Redo" onClick={() => dispatch(onRedoClick())} disabled={!useCanRedo()} />
+        </>
+      )}
 
       {/* Code view modal */}
       <Modal
