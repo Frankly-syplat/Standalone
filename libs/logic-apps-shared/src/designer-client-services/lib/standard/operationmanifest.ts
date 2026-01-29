@@ -8,6 +8,7 @@ import { getClientBuiltInConnectors } from '../base/search';
 import { aiOperationsGroup } from './operations/operationgroups';
 import mcpclientconnector from './manifest/mcpclientconnector';
 import builtinMcpClientManifest from './manifest/builtinmcpclient';
+import { invokeWorkflowManifest } from '../consumption/manifests/invokeWorkflow';
 
 export interface StandardOperationManifestServiceOptions extends BaseOperationManifestServiceOptions {
   getCachedOperation?: (connectorName: string, operationName: string) => Promise<any>;
@@ -152,6 +153,12 @@ export class StandardOperationManifestService extends BaseOperationManifestServi
   }
 
   override async getOperationManifest(connectorId: string, operationId: string): Promise<OperationManifest> {
+    // Handle workflow operations specifically
+    if (operationId === 'invokeworkflow') {
+      console.log('✅ Returning invokeWorkflowManifest for child workflow operation');
+      return invokeWorkflowManifest;
+    }
+
     const supportedManifest = supportedBaseManifestObjects.get(operationId);
     if (supportedManifest) {
       return supportedManifest;

@@ -1,0 +1,41 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "actions": {
+      "Call_GetEntraOAuthToken": {
+        "type": "Workflow",
+        "inputs": {
+          "host": {
+            "workflow": {
+              "id": "/subscriptions/43077d03-a9e5-4dd1-912a-a04281d5098d/resourceGroups/logic_apps/providers/Microsoft.Logic/workflows/GetEntraOAuthToken"
+            },
+            "triggerName": "Receive_HTTP_Request"
+          },
+          "body": {
+            "authentication": {
+              "clientId": "@variables('clientId')",
+              "clientSecret": "@variables('clientSecret')",
+              "tenantId": "@variables('tenantId')",
+              "scope": "https://graph.microsoft.com/.default"
+            }
+          }
+        },
+        "runAfter": {}
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {},
+  "kind": "Stateful"
+}

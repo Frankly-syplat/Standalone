@@ -313,7 +313,7 @@ export const workflowLoadingSlice = createSlice({
       state.isReadOnly = true;
       state.resourcePath = 'uploaded-workflow.json';
     });
-    builder.addCase(loadWorkflowFromJson.rejected, (state) => {
+    builder.addCase(loadWorkflowFromJson.rejected, (_state) => {
       // Don't clear existing workflow on JSON load failure
     });
   },

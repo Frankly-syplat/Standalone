@@ -8,7 +8,7 @@ import { useBoolean } from '@fluentui/react-hooks';
 
 export const SettingsBox = () => {
   const isDark = useIsDarkMode();
-  const isJsonViewerMode = useIsJsonViewerMode();
+  // const isJsonViewerMode = useIsJsonViewerMode(); // Currently unused but may be needed for future features
 
   const SettingsSection = (props: any) => {
     const { title, children, startExpanded = true } = props;

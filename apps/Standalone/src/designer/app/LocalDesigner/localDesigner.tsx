@@ -2,6 +2,7 @@ import type { RootState } from '../../state/store';
 import { CustomConnectionParameterEditorService } from './customConnection/customConnectionParameterEditorService';
 import { CustomEditorService } from './customEditorService';
 import { HttpClient } from './httpClient';
+import { MockConnectorService } from './mockConnectorService';
 import { PseudoCommandBar } from './pseudoCommandBar';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import {
@@ -21,6 +22,8 @@ import {
   BaseTenantService,
   BaseCognitiveServiceService,
   BaseRoleService,
+  InitConnectorService,
+  InitWorkflowService,
 } from '@microsoft/logic-apps-shared';
 import type { ContentType } from '@microsoft/logic-apps-shared';
 import {
@@ -33,6 +36,12 @@ import {
 import { useSelector } from 'react-redux';
 
 const httpClient = new HttpClient();
+
+// Initialize services for child workflow support
+const mockConnectorService = new MockConnectorService();
+console.log('🚀 Initializing MockConnectorService for child workflow support');
+InitConnectorService(mockConnectorService);
+
 const connectionServiceStandard = new StandardConnectionService({
   baseUrl: '/url',
   apiVersion: '2018-11-01',
@@ -178,7 +187,15 @@ const customCodeService = new StandardCustomCodeService({
 
 const workflowService = {
   getCallbackUrl: () => Promise.resolve({ method: 'POST', value: 'Dummy url' }),
+  getAppIdentity: () => ({ type: ResourceIdentityType.SYSTEM_ASSIGNED }),
+  isExplicitAuthRequiredForManagedIdentity: () => false,
+  isSplitOnSupported: () => true,
+  getDefinitionSchema: () => 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#',
 };
+
+// Initialize workflow service for child workflow support
+console.log('🚀 Initializing WorkflowService for child workflow support');
+InitWorkflowService(workflowService);
 
 const hostService = {
   fetchAndDisplayContent: (title: string, url: string, type: ContentType) => console.log(title, url, type),

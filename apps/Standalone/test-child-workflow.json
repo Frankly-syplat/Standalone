@@ -1,0 +1,55 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": {
+      "manual": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {}
+        }
+      }
+    },
+    "actions": {
+      "Call_Child_Workflow": {
+        "runAfter": {},
+        "type": "Workflow",
+        "inputs": {
+          "body": {
+            "message": "Hello from parent workflow"
+          },
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "host": {
+            "triggerName": "manual",
+            "workflow": {
+              "id": "/subscriptions/12345678-1234-1234-1234-123456789012/resourceGroups/myResourceGroup/providers/Microsoft.Logic/workflows/childWorkflow"
+            }
+          }
+        }
+      },
+      "Response": {
+        "runAfter": {
+          "Call_Child_Workflow": [
+            "Succeeded"
+          ]
+        },
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "body": {
+            "result": "@body('Call_Child_Workflow')",
+            "message": "Parent workflow completed"
+          }
+        }
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {},
+  "kind": "Stateful"
+}

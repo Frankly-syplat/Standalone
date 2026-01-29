@@ -3,17 +3,19 @@
 Complete guide to integrate the Azure Logic Apps Designer (JSON to Visual Designer) into your existing React project.
 
 ## 📋 Table of Contents
+
 - [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [File Structure](#file-structure)
 - [Step-by-Step Integration](#step-by-step-integration)
-- [Usage Examples](#usage-examples)
+- [Usage Examples](#usage-examples) 
 - [Troubleshooting](#troubleshooting)
 - [API Reference](#api-reference)
 
 ## 🎯 Overview
 
 This integration provides:
+
 - ✅ **JSON Upload/Paste**: Upload JSON workflow files or paste JSON directly
 - ✅ **Visual Designer**: Full Azure Logic Apps visual workflow designer
 - ✅ **Context Settings**: Read-only mode and unit test view options
@@ -106,16 +108,17 @@ npm install --save-dev @types/lodash.isequal@^4.5.8
 ### Step 2: Copy Required Files
 
 1. **Copy the designer folder**:
+
    ```bash
    cp -r LogicAppsUX/apps/Standalone/src/designer/ your-project/src/
    ```
-
 2. **Copy the libs folder**:
+
    ```bash
    cp -r LogicAppsUX/libs/ your-project/
    ```
-
 3. **Copy the Localize folder**:
+
    ```bash
    cp -r LogicAppsUX/Localize/ your-project/
    ```
@@ -275,7 +278,7 @@ export const SimpleLogicAppsDesigner: React.FC = () => {
             <h3>Upload Workflow</h3>
             <JsonUploader />
           </div>
-          
+        
           {/* Designer Canvas */}
           <div style={{ flex: 1, position: 'relative' }}>
             <LocalDesigner />
@@ -380,7 +383,7 @@ export const ModalLogicAppsDesigner: React.FC = () => {
               <h2>Logic Apps Designer</h2>
               <button onClick={() => setIsOpen(false)}>✕</button>
             </div>
-            
+          
             <div style={{ height: 'calc(100% - 60px)' }}>
               <Provider store={store}>
                 <ReactQueryProvider persistEnabled={false}>
@@ -446,22 +449,27 @@ const MyApp = () => {
 ### Core Components
 
 #### `<DesignerWrapper />`
+
 Main wrapper component that includes both upload panel and designer canvas.
 
 **Props:** None
 
 #### `<JsonUploader />`
+
 Component for uploading/pasting JSON workflow definitions.
 
 **Props:**
+
 - `onWorkflowLoaded?: () => void` - Callback when workflow is successfully loaded
 
 #### `<LocalDesigner />`
+
 The main visual designer canvas component.
 
 **Props:** None
 
 #### `<LocalizationSettings />`
+
 Language selector dropdown component.
 
 **Props:** None
@@ -469,6 +477,7 @@ Language selector dropdown component.
 ### Redux Store
 
 #### Actions
+
 ```typescript
 import { 
   loadWorkflowFromJson, 
@@ -491,6 +500,7 @@ dispatch(setLanguage('es')); // Spanish
 ```
 
 #### Selectors
+
 ```typescript
 import { 
   useIsReadOnly, 
@@ -508,9 +518,11 @@ const currentLanguage = useLanguage();
 ### Common Issues
 
 #### 1. "Module not found" errors
+
 **Problem:** Build system can't resolve workspace dependencies.
 
 **Solution:** Update your build configuration with proper aliases:
+
 ```typescript
 resolve: {
   alias: {
@@ -522,17 +534,21 @@ resolve: {
 ```
 
 #### 2. LESS compilation errors
+
 **Problem:** Build system doesn't support LESS files.
 
 **Solution:** Install and configure LESS loader:
+
 ```bash
 npm install --save-dev less less-loader
 ```
 
 #### 3. Buffer/Process not defined
+
 **Problem:** Node.js polyfills missing in browser environment.
 
 **Solution:** Add polyfills to your build configuration:
+
 ```typescript
 // For Vite
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -546,18 +562,22 @@ plugins: [
 ```
 
 #### 4. FluentUI icons not displaying
+
 **Problem:** Icons not initialized.
 
 **Solution:** Call `initializeIcons()` in your main entry file:
+
 ```typescript
 import { initializeIcons } from '@fluentui/react';
 initializeIcons();
 ```
 
 #### 5. Redux store conflicts
+
 **Problem:** Multiple Redux stores or provider conflicts.
 
 **Solution:** Ensure only one Provider wraps the designer components:
+
 ```typescript
 // ❌ Wrong - nested providers
 <Provider store={myStore}>
@@ -575,6 +595,7 @@ initializeIcons();
 ### Performance Optimization
 
 #### Code Splitting
+
 ```typescript
 import { lazy, Suspense } from 'react';
 
@@ -590,6 +611,7 @@ function App() {
 ```
 
 #### Bundle Size Optimization
+
 - Use tree shaking for FluentUI components
 - Consider lazy loading the designer
 - Minimize included locales if not needed
@@ -597,10 +619,12 @@ function App() {
 ## 📊 Bundle Impact
 
 Expected bundle size increase:
+
 - **Gzipped**: ~800KB - 1.2MB
 - **Uncompressed**: ~2.5MB - 3.5MB
 
 Main contributors:
+
 - FluentUI components (~40%)
 - Designer logic (~35%)
 - Monaco Editor (~15%)
@@ -620,6 +644,7 @@ This integration uses components from the Azure Logic Apps UX repository. Please
 ## 🤝 Support
 
 For issues specific to this integration:
+
 1. Check the troubleshooting section above
 2. Verify all dependencies are correctly installed
 3. Ensure build configuration matches your setup

@@ -12,6 +12,10 @@ export default defineConfig({
         find: '~@xyflow/react',
         replacement: '@xyflow/react',
       },
+      {
+        find: 'util',
+        replacement: 'util',
+      },
     ],
   },
   plugins: [
@@ -38,6 +42,7 @@ export default defineConfig({
   define: {
     global: 'globalThis',
     'process.env': {},
+    'process.version': '"v18.0.0"',
   },
   build: {
     // sourcemap: true,
@@ -48,6 +53,19 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['node_modules/.cache'],
+    exclude: [
+      'node_modules/.cache',
+      '@microsoft/logic-apps-shared',
+      '@microsoft/logic-apps-designer', 
+      '@microsoft/designer-ui'
+    ],
+    include: [
+      'react',
+      'react-dom',
+      '@tanstack/react-query',
+      '@fluentui/react',
+      '@fluentui/react-components',
+      'util'
+    ]
   },
 });
