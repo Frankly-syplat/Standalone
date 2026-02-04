@@ -5,7 +5,6 @@ import { HttpClient } from './httpClient';
 import { MockConnectorService } from './mockConnectorService';
 import { PseudoCommandBar } from './pseudoCommandBar';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
-import { IframeHeader } from '../../components/IframeHeader';
 import { useIframeIntegration } from '../../../hooks/useIframeIntegration';
 import { useEffect } from 'react';
 import {
@@ -281,9 +280,6 @@ export const LocalDesigner = () => {
 
   return (
     <DesignerProvider locale={language} options={{ ...designerProviderProps }}>
-      {/* Iframe Header */}
-      <IframeHeader isVisible={isIframeMode && !!workflowDefinition} />
-      
       {workflowDefinition ? (
         <BJSWorkflowProvider
           workflow={{
