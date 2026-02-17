@@ -57,6 +57,7 @@
       "import": "./src/index.ts",
       "default": "./src/index.ts"
     },
+    "./build/lib/index.css": "./build/lib/index.css",
     "./package.json": "./package.json"
   },
   "files": ["build/lib/**/*", "src"],
@@ -91,7 +92,7 @@
     "test:lib": "vitest run --retry=3",
     "unpublish:local": "pnpm unpublish --force"
   },
-  "sideEffects": false,
+  "sideEffects": ["*.css", "*.less", "./src/index.ts"],
   "type": "module",
   "types": "src/index.ts"
 }
