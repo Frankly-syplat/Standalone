@@ -50,10 +50,17 @@ export default defineConfig({
     'process.version': '"v18.0.0"',
   },
   build: {
-    // sourcemap: true,
-    minify: false,
+    sourcemap: false, // Disable source maps for production
+    minify: 'esbuild', // Enable minification for smaller bundle size
     rollupOptions: {
       plugins: [nodePolyfills()],
+      output: {
+        // Split vendor code for better caching
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-redux'],
+          'fluent-ui': ['@fluentui/react', '@fluentui/react-components'],
+        }
+      }
       //external: ['react', 'react-dom', '@tanstack/react-query', '@tanstack/react-query-devtools'],
     },
   },

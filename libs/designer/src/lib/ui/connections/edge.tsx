@@ -97,7 +97,15 @@ const ButtonEdge: React.FC<EdgeProps<LogicAppsEdgeProps>> = ({
   const raIndex: number = useMemo(() => {
     const sortedRunAfters = Object.keys(filteredRunAfters)
       .slice(0)
-      .sort((id1, id2) => (reactFlow.getNode(id2)?.position?.x ?? 0) - (reactFlow.getNode(id1)?.position?.x ?? 0));
+      .sort((id1, id2) => {
+        const node1 = reactFlow.getNode(id2);
+        const node2 = reactFlow.getNode(id1);
+        // Handle case where nodes might not be rendered yet
+        if (!node1 || !node2 || !node1.position || !node2.position) {
+          return 0;
+        }
+        return (node2.position.x ?? 0) - (node1.position.x ?? 0);
+      });
 
     return sortedRunAfters?.findIndex((key) => key === source);
   }, [filteredRunAfters, reactFlow, source]);

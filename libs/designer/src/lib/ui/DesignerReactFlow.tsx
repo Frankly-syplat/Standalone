@@ -125,6 +125,11 @@ const DesignerReactFlow = (props: any) => {
 
   const hasFitViewRun = useRef(false);
 
+  // Reset viewport fit when workflow changes significantly
+  useEffect(() => {
+    hasFitViewRun.current = false;
+  }, [nodes.length]);
+
   // Fit view to nodes on initial load
   useEffect(() => {
     if (containerDimensions.width === 0 || containerDimensions.height === 0) {
@@ -203,7 +208,8 @@ const DesignerReactFlow = (props: any) => {
   // In order to maintain accessibility, we are disabling this prop for tab navigation users
   // We are inferring tab nav users if they press the tab key 5 times within the first 10 seconds
   // This is not exact but should cover most cases
-  const [userInferredTabNavigation, setUserInferredTabNavigation] = useState(false);
+  // PRODUCTION FIX: Disabled by default to prevent node visibility issues during scrolling
+  const [userInferredTabNavigation, setUserInferredTabNavigation] = useState(true); // Changed to true to disable optimization
   useEffect(() => {
     if (!isInitialized) {
       return;
